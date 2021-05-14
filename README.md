@@ -1,3 +1,7 @@
+## Install
+
+> composer require biin2013/import-export
+
 ## Import 使用说明
 
 #### Import 构造函数参数
