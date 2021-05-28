@@ -1,7 +1,7 @@
 {
   "name": "biin2013/import-export",
   "description": "excel import export",
-  "type": "composer-plugin",
+  "type": "library",
   "license": "MIT",
   "require": {
     "php": "^7.4|^8.0",

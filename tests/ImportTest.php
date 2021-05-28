@@ -13,4 +13,11 @@ class ImportTest extends \PHPUnit\Framework\TestCase
         $import->setOnlyReadSheetIndex([0, 1, 3, 2]);
         print_r($import->getData());
     }
+
+    public function testImport2()
+    {
+        $path = './import/2.xlsx';
+        $import = new ImportExport\Import($path);
+        print_r($import->getData());
+    }
 }
