@@ -1,8 +1,7 @@
 <?php
 
 
-namespace ImportExport;
-
+namespace Biin2013\ImportExport;
 
 use Closure;
 use PhpOffice\PhpSpreadsheet\IOFactory;

@@ -1,15 +1,19 @@
 <?php
 
-use ImportExport\Export;
+
+use Biin2013\ImportExport\Export;
 
 class ExportTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
     public function testExport()
     {
         $export = new Export($this->getData());
         $export->setTitle([
             [
-                'merge_row' => 2,
                 'children' => [
                     [
                         'field' => 'id',

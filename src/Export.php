@@ -1,8 +1,7 @@
 <?php
 
 
-namespace ImportExport;
-
+namespace Biin2013\ImportExport;
 
 use Closure;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
@@ -75,7 +74,7 @@ class Export
      *  // sheet 1
      *  [
      *  'merge_row' => 2,
-     *  'data' => [
+     *  'children' => [
      *          // field 1
      *          [
      *              'name' => 'ID'
@@ -111,10 +110,10 @@ class Export
      * @throws WriterException
      */
     public function save(
-        string $rootPath,
-        $datePath = false,
+        string  $rootPath,
+                $datePath = false,
         ?string $fileName = null,
-        array $sheetConfig = []
+        array   $sheetConfig = []
     ): array
     {
         $filePath = $this->resolvePath($rootPath, $datePath);
@@ -243,14 +242,32 @@ class Export
     protected function resolveTitle(): array
     {
         $title = [];
-        foreach ($this->title as $index => $item) {
+        foreach ($this->title as $index => &$item) {
+            $item['merge_row'] = $this->resolveTitleMergeRow($item['children']);
             $title[$index] = $this->resolveTitleItem(
                 $item['children'],
-                $item['merge_row'] ?? 1
+                $item['merge_row']
             );
         }
 
         return $title;
+    }
+
+    /**
+     * @param array $data
+     * @return int
+     */
+    protected function resolveTitleMergeRow(array $data): int
+    {
+        $row = 1;
+        $subRow = [0];
+        foreach ($data as $v) {
+            if (!empty($v['children'])) {
+                $subRow[] = $this->resolveTitleMergeRow($v['children']);
+            }
+        }
+        $row += max($subRow);
+        return $row;
     }
 
     /**
@@ -262,10 +279,10 @@ class Export
      * @return array
      */
     protected function resolveTitleItem(
-        array $item,
-        int $mergeRow,
+        array  $item,
+        int    $mergeRow,
         string $column = 'A',
-        int $currentRow = 1
+        int    $currentRow = 1
     ): array
     {
         $data = [];
@@ -317,9 +334,9 @@ class Export
      */
     protected function resolveTitleFieldColumnAndRow(
         string $column,
-        int $columnStep,
-        int $row,
-        int $rowStep
+        int    $columnStep,
+        int    $row,
+        int    $rowStep
     ): array
     {
         if ($columnStep > 1 || $rowStep > 1) {
@@ -371,10 +388,10 @@ class Export
      * @return mixed
      */
     protected function defaultCellFormat(
-        mixed $value,
-        mixed $format,
-        string $field,
-        Cell $cell,
+        mixed     $value,
+        mixed     $format,
+        string    $field,
+        Cell      $cell,
         Worksheet $worksheet
     ): mixed
     {
@@ -390,9 +407,9 @@ class Export
      */
     protected function resolveCellConfig(
         Worksheet $worksheet,
-        array $config,
-        Cell $cell,
-        int $row
+        array     $config,
+        Cell      $cell,
+        int       $row
     )
     {
         if (isset($config['width'])) {
