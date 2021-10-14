@@ -133,8 +133,10 @@ class Export
             foreach ($data['data'] as $value) {
                 foreach ($value as $field => $val) {
                     $fieldConfig = $title[$index][$field];
+                    $fieldConfig['row'] = $row;
                     $currentColumn = ord($fieldConfig['column']) - ord('A') + 1;
                     $cell = $worksheet->getCellByColumnAndRow($currentColumn, $row);
+                    $this->resolveCellConfig($worksheet, $fieldConfig, $cell, $row);
                     if (is_callable($fieldConfig['format'] ?? null)) {
                         $result = call_user_func_array(
                             $fieldConfig['format'],
@@ -150,7 +152,6 @@ class Export
                         $cell->setValue($result);
                     }
 
-                    $this->resolveCellConfig($worksheet, $fieldConfig, $cell, $row);
                 }
                 $row++;
             }
@@ -424,6 +425,8 @@ class Export
         if (isset($config['color'])) {
             $cell->getStyle()->getFont()->getColor()->setRGB(ltrim($config['color'], '#'));
         }
+        $cell->getStyle()->getAlignment()->setHorizontal($config['horizontal'] ?? Alignment::HORIZONTAL_LEFT);
+        $cell->getStyle()->getAlignment()->setVertical($config['vertical'] ?? Alignment::VERTICAL_CENTER);
     }
 
     /**

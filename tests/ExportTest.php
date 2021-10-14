@@ -31,6 +31,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
                                 'field' => 'sex',
                                 'name' => '性别',
                                 'color' => '#0000ff',
+                                'horizontal' => 'right',
+                                'vertical' => 'center',
                                 'format' => function ($value) {
                                     return $value == 1
                                         ? '男'
