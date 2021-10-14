@@ -135,12 +135,17 @@ class Export
                     $fieldConfig = $title[$index][$field];
                     $currentColumn = ord($fieldConfig['column']) - ord('A') + 1;
                     $cell = $worksheet->getCellByColumnAndRow($currentColumn, $row);
-                    $result = call_user_func_array(
-                        is_callable($fieldConfig['format'] ?? null)
-                            ? $fieldConfig['format']
-                            : [$this, 'defaultCellFormat'],
-                        [$val, $fieldConfig['format'] ?? null, $field, $cell, $worksheet]
-                    );
+                    if (is_callable($fieldConfig['format'] ?? null)) {
+                        $result = call_user_func_array(
+                            $fieldConfig['format'],
+                            [$val, $cell, $worksheet, $value, $data, $this->data]
+                        );
+                    } else {
+                        $result = call_user_func_array(
+                            [$this, 'defaultCellFormat'],
+                            [$val, $fieldConfig['format'] ?? null, $field, $cell, $worksheet]
+                        );
+                    }
                     if (!is_null($result)) {
                         $cell->setValue($result);
                     }
