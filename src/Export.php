@@ -138,7 +138,7 @@ class Export
                     if (is_callable($fieldConfig['format'] ?? null)) {
                         $result = call_user_func_array(
                             $fieldConfig['format'],
-                            [$val, $cell, $worksheet, $value, $data, $this->data]
+                            [$val, $fieldConfig, $cell, $worksheet, $value, $data, $this->data]
                         );
                     } else {
                         $result = call_user_func_array(
