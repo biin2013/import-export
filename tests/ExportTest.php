@@ -12,6 +12,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     public function testExport()
     {
         $export = new Export($this->getData());
+        $export->addMergeCells(0, 1, 4, 1, 5);
+        $export->addMergeCells(1, 2, 2, 2, 3);
         $export->setTitle([
             [
                 'children' => [

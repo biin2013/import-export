@@ -22,6 +22,7 @@ class Export
     private ?IWriter $writer = null;
     private ?Spreadsheet $spreadsheet = null;
     private array $title = [];
+    private array $mergeCells = [];
 
     /**
      * Export constructor.
@@ -32,6 +33,32 @@ class Export
     {
         $this->data = $data;
         $this->type = ucfirst($type);
+    }
+
+    /**
+     * @param int $worksheetIndex
+     * @param int $startColumn
+     * @param int $startRow
+     * @param int $endColumn
+     * @param int $endRow
+     */
+    public function addMergeCells(
+        int $worksheetIndex,
+        int $startColumn,
+        int $startRow,
+        int $endColumn,
+        int $endRow
+    )
+    {
+        if (!isset($this->mergeCells[$worksheetIndex])) {
+            $this->mergeCells[$worksheetIndex] = [];
+        }
+        $this->mergeCells[$worksheetIndex][] = [
+            $startColumn,
+            $startRow,
+            $endColumn,
+            $endRow
+        ];
     }
 
     /**
@@ -127,6 +154,7 @@ class Export
                 $spreadsheet->createSheet($index);
             }
             $worksheet = $spreadsheet->setActiveSheetIndex($index);
+            $this->resolveMergeCell($worksheet, $index);
             $worksheet->setTitle($data['sheet_name']);
             $this->saveTitle($title[$index], $worksheet);
             $row = ($this->title[$index]['merge_row'] ?? 1) + 1;
@@ -196,6 +224,19 @@ class Export
         }
 
         return $this->writer;
+    }
+
+    /**
+     * @param Worksheet $worksheet
+     * @param int $index
+     */
+    protected function resolveMergeCell(Worksheet $worksheet, int $index)
+    {
+        if (empty($this->mergeCells[$index])) return;
+
+        foreach ($this->mergeCells[$index] as $v) {
+            $worksheet->mergeCellsByColumnAndRow(...$v);
+        }
     }
 
     /**
