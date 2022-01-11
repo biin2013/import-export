@@ -137,7 +137,12 @@ class Export
                     $currentColumn = ord($fieldConfig['column']) - ord('A') + 1;
                     $cell = $worksheet->getCellByColumnAndRow($currentColumn, $row);
                     $this->resolveCellConfig($worksheet, $fieldConfig, $cell, $row);
-                    if (is_callable($fieldConfig['format'] ?? null)) {
+                    if (is_callable($val)) {
+                        $result = call_user_func_array(
+                            $val,
+                            [$cell, $worksheet, $row, $currentColumn, $data, $this->data]
+                        );
+                    } elseif (is_callable($fieldConfig['format'] ?? null)) {
                         $result = call_user_func_array(
                             $fieldConfig['format'],
                             [$val, $fieldConfig, $cell, $worksheet, $value, $data, $this->data]
@@ -394,12 +399,12 @@ class Export
      * @return mixed
      */
     protected function defaultCellFormat(
-        mixed     $value,
-        mixed     $format,
-        string    $field,
-        Cell      $cell,
+        $value,
+        $format,
+        string $field,
+        Cell $cell,
         Worksheet $worksheet
-    ): mixed
+    )
     {
         return $value;
     }

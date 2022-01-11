@@ -33,7 +33,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
                                 'color' => '#0000ff',
                                 'horizontal' => 'right',
                                 'vertical' => 'center',
-                                'format' => function ($value) {
+                                'format' => function ($value, $config, $cell) {
                                     return $value == 1
                                         ? '男'
                                         : ($value == 2 ? '女' : '保密');
@@ -68,7 +68,13 @@ class ExportTest extends \PHPUnit\Framework\TestCase
                 'data' => [
                     [
                         'id' => 1,
-                        'username' => '张三',
+                        // this callback will override title format
+                        // when all cells are the same format, use title format
+                        'username' => function ($cell, $worksheet, $row, $column) {
+                            // merge cell
+                            //$worksheet->mergeCellsByColumnAndRow($column, $row, $column + 1, $row + 2);
+                            return '张三' . '-' . $row . '-' . $column;
+                        },
                         'sex' => 1
                     ],
                     [
