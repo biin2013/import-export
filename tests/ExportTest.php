@@ -20,52 +20,57 @@ class ExportTest extends \PHPUnit\Framework\TestCase
                 0 => [[1, 4, 1, 5]],
                 1 => [[2, 2, 2, 3]]
             ])
-            ->setTitle([
-                [
-                    'children' => [
-                        [
-                            'field' => 'id',
-                            'name' => 'ID'
-                        ],
-                        [
-                            'field' => 'userinfo',
-                            'name' => '用户信息',
-                            'children' => [
-                                [
-                                    'field' => 'username',
-                                    'name' => '姓名'
-                                ],
-                                [
-                                    'field' => 'sex',
-                                    'name' => '性别',
-                                    'color' => '#0000ff',
-                                    'horizontal' => 'right',
-                                    'vertical' => 'center',
-                                    'format' => function ($value, $config, $cell) {
-                                        return $value == 1
-                                            ? '男'
-                                            : ($value == 2 ? '女' : '保密');
-                                    }
-                                ]
+            ->setTitle($this->getTitle());
+        print_r($export->save('./export/test_export'));
+    }
+
+    private function getTitle(): array
+    {
+        return [
+            [
+                'children' => [
+                    [
+                        'field' => 'id',
+                        'name' => 'ID'
+                    ],
+                    [
+                        'field' => 'userinfo',
+                        'name' => '用户信息',
+                        'children' => [
+                            [
+                                'field' => 'username',
+                                'name' => '姓名'
+                            ],
+                            [
+                                'field' => 'sex',
+                                'name' => '性别',
+                                'color' => '#0000ff',
+                                'horizontal' => 'right',
+                                'vertical' => 'center',
+                                'format' => function ($value, $config, $cell) {
+                                    return $value == 1
+                                        ? '男'
+                                        : ($value == 2 ? '女' : '保密');
+                                }
                             ]
                         ]
                     ]
-                ],
-                [
-                    'children' => [
-                        [
-                            'field' => 'id',
-                            'name' => 'ID'
-                        ],
-                        [
-                            'field' => 'date',
-                            'name' => '日期',
-                            'width' => 20
-                        ]
+                ]
+            ],
+            [
+                'children' => [
+                    [
+                        'field' => 'id',
+                        'name' => 'ID'
+                    ],
+                    [
+                        'field' => 'date',
+                        'name' => '日期',
+                        'width' => 20
                     ]
                 ]
-            ]);
-        print_r($export->save('./export/test_export'));
+            ]
+        ];
     }
 
     private function getData(): array

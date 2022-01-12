@@ -367,24 +367,23 @@ class Export
             $data[$value['field']] = $value;
             $data[$value['field']]['column'] = $column;
             if (!empty($value['children'])) {
+                $countChildren = count($value['children']);
                 $data[$value['field']] = array_merge(
                     $data[$value['field']],
                     $this->resolveTitleFieldColumnAndRow(
                         $column,
-                        count($value['children']),
+                        $countChildren,
                         $currentRow,
                         1
-                    ));
-                $mergeRow--;
-                if ($mergeRow < 1) {
-                    return [];
-                }
+                    )
+                );
                 $data = array_merge($data, $this->resolveTitleItem(
                     $value['children'],
-                    $mergeRow,
+                    $mergeRow - 1,
                     $column,
-                    ++$currentRow
+                    $currentRow + 1
                 ));
+                $column = chr(ord($column) + $countChildren);
             } else {
                 $data[$value['field']] = array_merge(
                     $data[$value['field']],
