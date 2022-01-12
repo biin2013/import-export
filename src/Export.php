@@ -187,7 +187,7 @@ class Export
                 foreach ($value as $field => $val) {
                     $fieldConfig = $title[$index][$field];
                     $fieldConfig['row'] = $row;
-                    $currentColumn = ord($fieldConfig['column']) - ord('A') + 1;
+                    $currentColumn = $fieldConfig['column'];
                     $cell = $worksheet->getCellByColumnAndRow($currentColumn, $row);
                     $this->resolveCellConfig($worksheet, $fieldConfig, $cell, $row);
                     if (is_callable($val)) {
@@ -351,15 +351,15 @@ class Export
      * resolve title item
      * @param array $item
      * @param int $mergeRow
-     * @param string $column
+     * @param int $column
      * @param int $currentRow
      * @return array
      */
     protected function resolveTitleItem(
-        array  $item,
-        int    $mergeRow,
-        string $column = 'A',
-        int    $currentRow = 1
+        array $item,
+        int   $mergeRow,
+        int   $column = 1,
+        int   $currentRow = 1
     ): array
     {
         $data = [];
@@ -383,7 +383,7 @@ class Export
                     $column,
                     $currentRow + 1
                 ));
-                $column = chr(ord($column) + $countChildren);
+                $column += $countChildren;
             } else {
                 $data[$value['field']] = array_merge(
                     $data[$value['field']],
@@ -402,30 +402,30 @@ class Export
 
     /**
      * resolve title field column and row
-     * @param string $column
+     * @param int $column
      * @param int $columnStep
      * @param int $row
      * @param int $rowStep
      * @return array
      */
     protected function resolveTitleFieldColumnAndRow(
-        string $column,
-        int    $columnStep,
-        int    $row,
-        int    $rowStep
+        int $column,
+        int $columnStep,
+        int $row,
+        int $rowStep
     ): array
     {
         if ($columnStep > 1 || $rowStep > 1) {
-            $maxColumn = $columnStep > 1 ? chr(ord($column) + $columnStep - 1) : $column;
+            $maxColumn = $columnStep > 1 ? $column + $columnStep - 1 : $column;
             $maxRow = $rowStep > 1 ? $row + $rowStep - 1 : $row;
             return [
                 'merge' => true,
-                'cell' => $column . $row . ':' . $maxColumn . $maxRow
+                'cell' => [$column, $row, $maxColumn, $maxRow]
             ];
         } else {
             return [
                 'merge' => false,
-                'cell' => $column . $row
+                'cell' => [$column, $row, $column, $row]
             ];
         }
     }
@@ -439,18 +439,16 @@ class Export
     protected function saveTitle(array $title, Worksheet $worksheet)
     {
         foreach ($title as $value) {
+            $column = $value['cell'][0];
+            $row = $value['cell'][1];
             if ($value['merge']) {
-                $cells = explode(':', $value['cell']);
-                $currentCell = $cells[0];
-                $worksheet->mergeCells($value['cell']);
-            } else {
-                $currentCell = $value['cell'];
+                $worksheet->mergeCellsByColumnAndRow(...$value['cell']);
             }
-            $worksheet->getStyle($currentCell)
+            $worksheet->getStyleByColumnAndRow($column, $row)
                 ->getAlignment()
                 ->setHorizontal(Alignment::HORIZONTAL_CENTER)
                 ->setVertical(Alignment::VERTICAL_CENTER);
-            $worksheet->getCell($currentCell)->setValue($value['name']);
+            $worksheet->getCellByColumnAndRow($column, $row)->setValue($value['name']);
         }
     }
 
@@ -489,7 +487,7 @@ class Export
     )
     {
         if (isset($config['width'])) {
-            $worksheet->getColumnDimension($config['column'])
+            $worksheet->getColumnDimensionByColumn($config['column'])
                 ->setWidth($config['width']);
         }
         if (isset($config['color'])) {
