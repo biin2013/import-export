@@ -29,7 +29,7 @@ class Export
      * @param array $data
      * @param string $type
      */
-    public function __construct(array $data, string $type = 'Xlsx')
+    public function __construct(array $data = [], string $type = 'Xlsx')
     {
         $this->data = $data;
         $this->type = ucfirst($type);
@@ -41,6 +41,7 @@ class Export
      * @param int $startRow
      * @param int $endColumn
      * @param int $endRow
+     * @return Export
      */
     public function addMergeCells(
         int $worksheetIndex,
@@ -48,7 +49,7 @@ class Export
         int $startRow,
         int $endColumn,
         int $endRow
-    )
+    ): self
     {
         if (!isset($this->mergeCells[$worksheetIndex])) {
             $this->mergeCells[$worksheetIndex] = [];
@@ -59,6 +60,19 @@ class Export
             $endColumn,
             $endRow
         ];
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     * @return $this
+     */
+    public function data(array $data): self
+    {
+        $this->data = $data;
+
+        return $this;
     }
 
     /**
