@@ -36,6 +36,17 @@ class Export
     }
 
     /**
+     * @param array $merge
+     * @return $this
+     */
+    public function setMergeCells(array $merge): self
+    {
+        $this->mergeCells = $merge;
+
+        return $this;
+    }
+
+    /**
      * @param int $worksheetIndex
      * @param int $startColumn
      * @param int $startRow
@@ -68,7 +79,7 @@ class Export
      * @param array $data
      * @return $this
      */
-    public function data(array $data): self
+    public function setData(array $data): self
     {
         $this->data = $data;
 
