@@ -154,14 +154,13 @@ class Export
 
     /**
      * @param string $rootPath
-     * @param Closure|string|false $datePath
-     * @param ?string $fileName
+     * @param mixed $datePath
+     * @param string|null $fileName
      * @param array $sheetConfig
      * @return array
      * @throws SpreadsheetException
-     * @throws WriterException
      */
-    public function save(
+    public function build(
         string  $rootPath,
                 $datePath = false,
         ?string $fileName = null,
@@ -214,12 +213,33 @@ class Export
                 $row++;
             }
         }
-        $this->getWriter()->save($filePath . $fileName);
 
         return [
             'path' => $filePath,
             'filename' => $fileName
         ];
+    }
+
+    /**
+     * @param string $rootPath
+     * @param Closure|string|false $datePath
+     * @param ?string $fileName
+     * @param array $sheetConfig
+     * @return array
+     * @throws SpreadsheetException
+     * @throws WriterException
+     */
+    public function save(
+        string  $rootPath,
+                $datePath = false,
+        ?string $fileName = null,
+        array   $sheetConfig = []
+    ): array
+    {
+        $data = $this->build($rootPath, $datePath, $fileName, $sheetConfig);
+        $this->getWriter()->save($data['path'] . $data['filename']);
+
+        return $data;
     }
 
     /**
