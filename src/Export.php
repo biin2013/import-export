@@ -23,6 +23,8 @@ class Export
     private ?Spreadsheet $spreadsheet = null;
     private array $title = [];
     private array $mergeCells = [];
+    private string $path;
+    private string $filename;
 
     /**
      * Export constructor.
@@ -153,11 +155,27 @@ class Export
     }
 
     /**
+     * @return string
+     */
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilename(): string
+    {
+        return $this->filename;
+    }
+
+    /**
      * @param string $rootPath
      * @param mixed $datePath
      * @param string|null $fileName
      * @param array $sheetConfig
-     * @return array
+     * @return $this
      * @throws SpreadsheetException
      */
     public function build(
@@ -165,7 +183,7 @@ class Export
                 $datePath = false,
         ?string $fileName = null,
         array   $sheetConfig = []
-    ): array
+    ): self
     {
         $filePath = $this->resolvePath($rootPath, $datePath);
         $fileName = $this->resolveType()->resolveFileName($fileName);
@@ -214,32 +232,23 @@ class Export
             }
         }
 
-        return [
-            'path' => $filePath,
-            'filename' => $fileName
-        ];
+        $this->path = $filePath;
+        $this->filename = $fileName;
+        return $this;
     }
 
     /**
-     * @param string $rootPath
-     * @param Closure|string|false $datePath
-     * @param ?string $fileName
-     * @param array $sheetConfig
      * @return array
-     * @throws SpreadsheetException
      * @throws WriterException
      */
-    public function save(
-        string  $rootPath,
-                $datePath = false,
-        ?string $fileName = null,
-        array   $sheetConfig = []
-    ): array
+    public function save(): array
     {
-        $data = $this->build($rootPath, $datePath, $fileName, $sheetConfig);
-        $this->getWriter()->save($data['path'] . $data['filename']);
+        $this->getWriter()->save($this->path . $this->filename);
 
-        return $data;
+        return [
+            'path' => $this->path,
+            'filename' => $this->filename
+        ];
     }
 
     /**

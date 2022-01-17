@@ -13,15 +13,17 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     {
         //$export = new Export($this->getData());
         $export = new Export();
-        $export->setData($this->getData())
+        $path = $export->setData($this->getData())
             /*->addMergeCells(0, 1, 4, 1, 5)
             ->addMergeCells(1, 2, 2, 2, 3)*/
             ->setMergeCells([
                 0 => [[1, 4, 1, 5]],
                 1 => [[2, 2, 2, 3]]
             ])
-            ->setTitle($this->getTitle());
-        print_r($export->save('./export/test_export'));
+            ->setTitle($this->getTitle())
+            ->build('./export/test_export')
+            ->save();
+        print_r($path);
     }
 
     private function getTitle(): array
