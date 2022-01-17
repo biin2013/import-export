@@ -21,8 +21,8 @@ class ExportTest extends \PHPUnit\Framework\TestCase
                 1 => [[2, 2, 2, 3]]
             ])
             ->setTitle($this->getTitle())
-            ->build('./export/test_export')
-            ->save();
+            ->build()
+            ->save('./export/test_export');
         print_r($path);
     }
 

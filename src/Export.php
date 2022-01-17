@@ -23,8 +23,6 @@ class Export
     private ?Spreadsheet $spreadsheet = null;
     private array $title = [];
     private array $mergeCells = [];
-    private string $path;
-    private string $filename;
 
     /**
      * Export constructor.
@@ -155,38 +153,14 @@ class Export
     }
 
     /**
-     * @return string
-     */
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFilename(): string
-    {
-        return $this->filename;
-    }
-
-    /**
-     * @param string $rootPath
-     * @param mixed $datePath
-     * @param string|null $fileName
      * @param array $sheetConfig
      * @return $this
      * @throws SpreadsheetException
      */
     public function build(
-        string  $rootPath,
-                $datePath = false,
-        ?string $fileName = null,
-        array   $sheetConfig = []
+        array $sheetConfig = []
     ): self
     {
-        $filePath = $this->resolvePath($rootPath, $datePath);
-        $fileName = $this->resolveType()->resolveFileName($fileName);
         $title = $this->resolveTitle();
         $spreadsheet = $this->getSpreadsheet();
         $this->resolveSheetConfig($spreadsheet, $sheetConfig);
@@ -232,22 +206,29 @@ class Export
             }
         }
 
-        $this->path = $filePath;
-        $this->filename = $fileName;
         return $this;
     }
 
     /**
+     * @param string $rootPath
+     * @param mixed $datePath
+     * @param string|null $fileName
      * @return array
      * @throws WriterException
      */
-    public function save(): array
+    public function save(
+        string  $rootPath,
+                $datePath = false,
+        ?string $fileName = null
+    ): array
     {
-        $this->getWriter()->save($this->path . $this->filename);
+        $filePath = $this->resolvePath($rootPath, $datePath);
+        $fileName = $this->resolveType()->resolveFileName($fileName);
+        $this->getWriter()->save($filePath . $fileName);
 
         return [
-            'path' => $this->path,
-            'filename' => $this->filename
+            'path' => $filePath,
+            'filename' => $fileName
         ];
     }
 
